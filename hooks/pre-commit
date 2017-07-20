@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+echo Running pre commit hooks
+dir=`dirname $0`
+failed=0
+for script in ${dir}/pre-commit.d/*
+do
+  echo -n "Running script $(basename ${script}) ... "
+  output=`${script} 2>&1`
+
+  if [[ $? != 0 ]] ; then
+    failed=1
+    echo -e "\e[31m✗ Failed\e[39m"
+    echo ${output}
+  else
+    echo -e "\e[32m✓ Succes\e[39m"
+  fi
+done
+
+if [[ ${failed} != 0 ]] ; then
+  echo -e "\e[31mOne ore more hooks failed, git commit denied!\e[39m"
+  exit ${failed}
+fi

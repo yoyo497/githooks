@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "Post-checkout hook $@"
+
+git diff $1 $2 --name-only | grep bower.json > /dev/null
+if [[ $? == 0 ]]; then
+  echo "Bower changed reloading components"
+  bower_dir=bower_components
+  if [[ -f .bowerrc ]]; then
+    bower_components=`node -e "console.log(JSON.parse(require('fs').readFileSync('.\/.bowerrc')).directory)"`
+  fi
+  rm -rf ${bower_components}
+  bower install > bower_install.log
+
+  if [[ $? != 0 ]]; then
+    echo -e "\e[31mBower install had some problems please check bower_install.log\e[39m"
+  fi
+fi
+
+git diff $1 $2 --name-only | grep package.json > /dev/null
+if [[ $? == 0 ]]; then
+  echo "package.json changed reloading node_modules"
+  rm -rf node-modules package-lock.json
+  npm install > npm_install.log
+
+  if [[ $? != 0 ]]; then
+    echo -e "\e[31mnpm install had some problems please check npm_install.log\e[39m"
+  fi
+fi
+

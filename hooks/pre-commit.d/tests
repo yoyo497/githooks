@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+npm run test
+
+failed=$?
+if [[ ${failed} != 0 ]] ; then
+  echo "??? Tests failed, git commit denied!"
+  exit ${failed}
+fi
