@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-eslint_executable=`find -name .git -prune -o -name eslint -executable -type f -follow -print`
+eslint_executable=`find . -name .git -prune -o -name eslint -perm +001 -type f -follow -print`
 
 files=$(git diff --cached --name-only --diff-filter=M | grep '\.js$')
 
