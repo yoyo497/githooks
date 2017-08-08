@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-eslint_executable=`find . -name .git -prune -o -name eslint -perm +001 -type f -follow -print`
-
 files=$(git diff --cached --name-only --diff-filter=M | grep '\.js$')
 
 # Prevent ESLint help message if no files matched
@@ -11,13 +9,13 @@ fi
 
 failed=0
 for file in ${files}; do
-  git show :${file} | ${eslint_executable} --stdin --stdin-filename "$file"
+  git show :${file} | npx eslint --color --stdin --stdin-filename "$file"
   if [[ $? != 0 ]] ; then
     failed=1
   fi
 done;
 
 if [[ $failed != 0 ]] ; then
-  echo "🚫🚫🚫 ESLint failed, git commit denied!"
+  echo -e "\e[31m🚫🚫🚫 ESLint failed, git commit denied!\e[39m"
   exit $failed
 fi
